@@ -12,14 +12,14 @@
   width: 100%;
 }
 
-.shiki,
+/* .shiki,
 .shiki span {
   color: var(--shiki-light);
   background: var(--shiki-light-bg);
-}
+} */
 
-html.dark .shiki,
-html.dark .shiki span {
+html .shiki,
+html .shiki span {
   color: var(--shiki-dark);
   background: var(--shiki-dark-bg);
 }
