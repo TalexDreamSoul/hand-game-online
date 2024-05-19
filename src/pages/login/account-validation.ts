@@ -86,7 +86,10 @@ validationMiddlewares.push(
 
     let last = -1;
 
-    [...val].forEach((item) => {
+    [...val].forEach((item, ind) => {
+      if (ind > 20)
+        return
+
       if (!matched)
         return
 
@@ -102,7 +105,7 @@ validationMiddlewares.push(
       else last = num
     })
 
-    return [matched, '不能有连续数字出现']
+    return [matched, '不能有连续数字出现在前20位']
   },
 )
 
@@ -210,8 +213,8 @@ validationMiddlewares.push(
     let matched = true
     let last = '';
 
-    [...val].forEach((item) => {
-      if (!matched)
+    [...val].forEach((item, ind) => {
+      if (!matched || ind < 20)
         return
 
       // 特殊字符都要检测
@@ -226,7 +229,7 @@ validationMiddlewares.push(
       else last = item
     })
 
-    return [matched, '不能有连续特殊字符出现']
+    return [matched, '不能有连续特殊字符出现在后20位']
   },
 )
 
@@ -263,10 +266,10 @@ validationMiddlewares.push(
     if (val.includes(' ')) {
       const index = val.indexOf(' ')
       if (val[index + 1] === '0')
-        return [true, '空格后面那位必须是0']
-      else return [false, '空格后面那位必须是0']
+        return [true, '第一个空格后面那位必须是0']
+      else return [false, '第一个空格后面那位必须是0']
     }
-    else { return [true, '空格后面那位必须是0'] }
+    else { return [true, '第一个空格后面那位必须是0'] }
   },
 )
 
@@ -284,10 +287,10 @@ validationMiddlewares.push(
     if (val.includes('0')) {
       const index = val.indexOf('0')
       if (hundredNames.includes(val[index + 1]))
-        return [true, '数字0后面必须接着百家姓']
-      else return [false, '数字0后面必须接着百家姓']
+        return [true, '第一个数字0后面必须接着百家姓']
+      else return [false, '第一个数字0后面必须接着百家姓']
     }
-    else { return [true, '数字0后面必须接着百家姓'] }
+    else { return [true, '第一个数字0后面必须接着百家姓'] }
   },
 )
 
@@ -306,7 +309,7 @@ validationMiddlewares.push(
   },
 )
 
-// 偶数之和必须小于奇数之和
+// 偶数之和必须大于奇数之和
 validationMiddlewares.push(
   (val: string) => {
     const odd = val.split('').filter((item) => {
@@ -319,8 +322,24 @@ validationMiddlewares.push(
     }).reduce((pre, cur) => {
       return pre + cur
     }, 0)
-    if (even > odd)
-      return [false, '偶数之和必须小于奇数之和']
-    else return [true, '偶数之和必须小于奇数之和']
+    if (even < odd)
+      return [false, '偶数之和必须大于奇数之和']
+    else return [true, '偶数之和必须大于奇数之和']
+  },
+)
+
+// 数字必须按照递增序列排列
+validationMiddlewares.push(
+  (val: string) => {
+    const res = [...val].filter(item => Number.isInteger(+item))
+    if (res.length === 0) { return [true, '数字必须按照递增序列排列'] }
+    else {
+      const sorted = res.sort((a, b) => {
+        return a - b
+      })
+      if (JSON.stringify(res) === JSON.stringify(sorted))
+        return [true, '数字必须按照递增序列排列']
+      else return [false, '数字必须按照递增序列排列']
+    }
   },
 )
