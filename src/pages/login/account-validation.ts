@@ -151,13 +151,13 @@ validationMiddlewares.push(
 
       // 如果last是大写
       if (/[A-Z]/.test(last)) {
-        if (!/[a-z]/.test(item))
+        if (/[a-z]/.test(item))
           matched = false
         else last = item
       }
       // 如果last是小写
       else if (/[a-z]/.test(last)) {
-        if (!/[A-Z]/.test(item))
+        if (/[A-Z]/.test(item))
           matched = false
         else last = item
       }
@@ -170,9 +170,28 @@ validationMiddlewares.push(
 // 必须有16进制合法的颜色
 validationMiddlewares.push(
   (val: string) => {
-    if (/^#[0-9a-fA-F]{6}$/.test(val))
-      return [true, '必须包含16进制颜色']
-    else return [false, '必须包含16进制颜色']
+    // 找到#
+    const ind = val.indexOf('#')
+    if (ind === -1) {
+      return [false, '必须有16进制合法的颜色']
+    }
+    else {
+      // 取#后的6位
+      if (ind + 7 > val.length) { return [false, '必须有16进制合法的颜色'] }
+      else {
+        const color = val.slice(ind + 1, ind + 7)
+
+        const res = [...color].filter((item) => {
+          if (!/[0-9A-F]/.test(item))
+            return false
+          return true
+        })
+
+        if (res.length === 0)
+          return [true, '必须有16进制合法的颜色']
+        else return [false, '必须有16进制合法的颜色']
+      }
+    }
   },
 )
 
