@@ -271,3 +271,37 @@ validationMiddlewares.push(
     else { return [true, '数字0后面必须接着百家姓'] }
   },
 )
+
+// 奇数个数不能比偶数个数多
+validationMiddlewares.push(
+  (val: string) => {
+    const odd = val.split('').filter((item) => {
+      return item % 2 === 1
+    }).length
+    const even = val.split('').filter((item) => {
+      return item % 2 === 0
+    }).length
+    if (odd > even)
+      return [false, '奇数个数不能比偶数个数多']
+    else return [true, '奇数个数不能比偶数个数多']
+  },
+)
+
+// 偶数之和必须小于奇数之和
+validationMiddlewares.push(
+  (val: string) => {
+    const odd = val.split('').filter((item) => {
+      return item % 2 === 1
+    }).reduce((pre, cur) => {
+      return pre + cur
+    }, 0)
+    const even = val.split('').filter((item) => {
+      return item % 2 === 0
+    }).reduce((pre, cur) => {
+      return pre + cur
+    }, 0)
+    if (even > odd)
+      return [false, '偶数之和必须小于奇数之和']
+    else return [true, '偶数之和必须小于奇数之和']
+  },
+)
