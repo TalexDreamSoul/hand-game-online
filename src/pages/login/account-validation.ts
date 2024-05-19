@@ -173,18 +173,18 @@ validationMiddlewares.push(
     // 找到#
     const ind = val.indexOf('#')
     if (ind === -1) {
-      return [false, '必须有16进制合法的颜色']
+      return [false, '必须有16进制合法的颜色标识符']
     }
     else {
       // 取#后的6位
-      if (ind + 7 > val.length) { return [false, '必须有16进制合法的颜色'] }
+      if (ind + 7 > val.length) { return [false, '必须有16进制合法的颜色长度'] }
       else {
         const color = val.slice(ind + 1, ind + 7)
 
         const res = [...color].filter((item) => {
-          if (!/[0-9A-F]/.test(item))
-            return false
-          return true
+          if (!/[0-9A-F]/.test(String(item).toUpperCase()))
+            return !false
+          return !true
         })
 
         if (res.length === 0)
