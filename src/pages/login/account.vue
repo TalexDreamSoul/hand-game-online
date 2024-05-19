@@ -2,7 +2,7 @@
 import { validationMiddlewares } from './account-validation'
 
 const mentions = reactive<Array<{ err: boolean, msg: string }>>([])
-const account = ref('')
+const account = ref('李....................  李touch#A0c0E0.9.9.507')
 
 watch(
   () => account.value,
@@ -40,12 +40,12 @@ watch(
     flex-col
     items-center
     justify-center
-    gap-10
+    gap-4
   >
     <p text-1xl font-bold>
       要登录，你需要输入你的账号...
     </p>
-    <textarea v-model="account" text-1xl h-18 w-full border-rounded />
+    <textarea v-model="account" text-1xl h-24 w-full flex-1 border-rounded />
     <button w-full>
       登录
     </button>
@@ -68,6 +68,15 @@ watch(
 </template>
 
 <style>
+.Login-Container textarea:focus-within {
+  outline: none;
+}
+
+.Login-Container textarea {
+  border-radius: 8px;
+  border: 1px solid #25aef3;
+}
+
 .Login-Mention-Item.err {
   border-left: 2px solid #ff0000;
 }
@@ -118,20 +127,25 @@ watch(
   background-color: #1e1f1f;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1080px) {
   .Login-Mention {
     position: absolute;
     margin-top: 1rem;
 
     top: 30%;
+
+    border-radius: 18px 18px 0 0;
   }
 
   div.Login-Container {
-    position: absolute;
+    z-index: 1;
+    position: sticky;
 
     top: 0;
 
     height: 30%;
+
+    border-radius: 0 0 18px 18px;
   }
 }
 
