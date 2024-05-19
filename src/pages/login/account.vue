@@ -42,10 +42,10 @@ watch(
     justify-center
     gap-10
   >
-    <p text-3xl font-bold>
+    <p text-1xl font-bold>
       要登录，你需要输入你的账号...
     </p>
-    <input v-model="account" h-10 w-full border-rounded text-2xl>
+    <textarea v-model="account" text-1xl h-18 w-full border-rounded />
     <button w-full>
       登录
     </button>
