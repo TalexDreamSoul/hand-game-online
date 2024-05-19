@@ -118,6 +118,23 @@ watch(
   background-color: #1e1f1f;
 }
 
+@media (max-width: 768px) {
+  .Login-Mention {
+    position: absolute;
+    margin-top: 1rem;
+
+    top: 30%;
+  }
+
+  .Login-Container {
+    /* position: sticky; */
+
+    top: 0;
+
+    height: 30%;
+  }
+}
+
 .Login-Container {
   padding: 2rem;
 

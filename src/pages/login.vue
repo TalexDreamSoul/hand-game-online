@@ -23,4 +23,11 @@ import Account from './login/account.vue'
   color: #fff;
   transform: translate(-50%, -50%);
 }
+
+@media screen and (max-width: 768px) {
+  .Login-Wrapper {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>
