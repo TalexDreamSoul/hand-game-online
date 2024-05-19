@@ -156,7 +156,7 @@ validationMiddlewares.push(
         else last = item
       }
       // 如果last是小写
-      else {
+      else if (/[a-z]/.test(last)) {
         if (!/[A-Z]/.test(item))
           matched = false
         else last = item
