@@ -126,8 +126,8 @@ watch(
     top: 30%;
   }
 
-  .Login-Container {
-    /* position: sticky; */
+  div.Login-Container {
+    position: absolute;
 
     top: 0;
 
