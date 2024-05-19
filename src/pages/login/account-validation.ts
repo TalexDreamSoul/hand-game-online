@@ -91,7 +91,7 @@ validationMiddlewares.push(
         return
 
       if (!Number.isInteger(+item))
-        return
+        return last = -1
 
       const num = +item
       if (last === -1)
@@ -118,7 +118,7 @@ validationMiddlewares.push(
 
       // 大小写字母都要检测
       if (!/[A-Z]/.test(item) && !/[a-z]/.test(item))
-        return
+        return last = ''
 
       if (last === '')
         return last = item
@@ -144,7 +144,7 @@ validationMiddlewares.push(
 
       // 大小写字母都要检测
       if (!/[A-Z]/.test(item) && !/[a-z]/.test(item))
-        return
+        return last = ''
 
       if (last === '')
         return last = item
@@ -197,7 +197,7 @@ validationMiddlewares.push(
 
       // 特殊字符都要检测
       if (!/[^A-Za-z0-9]/.test(item))
-        return
+        return last = ''
 
       if (last === '')
         return last = item
@@ -224,8 +224,8 @@ validationMiddlewares.push(
 validationMiddlewares.push(
   (val: string) => {
     if (val.includes('touch'))
-      return [true, '密码中必须包含touch']
-    else return [false, '密码中必须包含touch']
+      return [true, '必须包含touch']
+    else return [false, '必须包含touch']
   },
 )
 
@@ -233,29 +233,41 @@ validationMiddlewares.push(
 validationMiddlewares.push(
   (val: string) => {
     if (val.includes(' '))
-      return [true, '密码中必须包含空格']
-    else return [false, '密码中必须包含空格']
+      return [true, '必须包含空格']
+    else return [false, '必须包含空格']
   },
 )
 
-// 密码中的空格后面那位必须是5
+// 密码中的空格后面那位必须是0
 validationMiddlewares.push(
   (val: string) => {
     if (val.includes(' ')) {
       const index = val.indexOf(' ')
-      if (val[index + 1] === '5')
-        return [true, '密码中的空格后面那位必须是5']
-      else return [false, '密码中的空格后面那位必须是5']
+      if (val[index + 1] === '0')
+        return [true, '空格后面那位必须是0']
+      else return [false, '空格后面那位必须是0']
     }
-    else { return [true, '密码中的空格后面那位必须是5'] }
+    else { return [true, '空格后面那位必须是0'] }
   },
 )
 
-// 密码中必须包含罗马数字
 validationMiddlewares.push(
   (val: string) => {
     if (/[IVXLCDM]/.test(val))
-      return [true, '密码中必须包含罗马数字']
-    else return [false, '密码中必须包含罗马数字']
+      return [true, '必须包含罗马数字']
+    else return [false, '必须包含罗马数字']
+  },
+)
+
+// 数字0后面必须接着百家姓
+validationMiddlewares.push(
+  (val: string) => {
+    if (val.includes('0')) {
+      const index = val.indexOf('0')
+      if (hundredNames.includes(val[index + 1]))
+        return [true, '数字0后面必须接着百家姓']
+      else return [false, '数字0后面必须接着百家姓']
+    }
+    else { return [true, '数字0后面必须接着百家姓'] }
   },
 )
