@@ -64,8 +64,8 @@ validationMiddlewares.push(
 validationMiddlewares.push(
   (val: string) => {
     if (/[0-9]/.test(val.slice(0, 15)))
-      return [false, '账号前15位不能有数字']
-    else return [true, '账号前15位不能有数字']
+      return [false, '前15位不能有数字']
+    else return [true, '前15位不能有数字']
   },
 )
 
@@ -74,8 +74,8 @@ const hundredNames = ['李', '王', '张', '刘', '陈', '杨', '赵', '黄', '�
 validationMiddlewares.push(
   (val: string) => {
     if (hundredNames.includes(val.slice(0, 1)))
-      return [true, '账号必须以百家姓为开头']
-    else return [false, '账号必须以百家姓为开头']
+      return [true, '必须以百家姓为开头']
+    else return [false, '必须以百家姓为开头']
   },
 )
 
