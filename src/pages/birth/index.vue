@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import Account from './login/account.vue'
+import Birth from './birth.vue'
 </script>
 
 <template>
   <div class="Login-Page" h-full w-full flex flex-col items-center justify-center>
     <div class="Login-Wrapper">
-      <Account />
+      <Birth />
     </div>
   </div>
 </template>

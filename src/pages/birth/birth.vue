@@ -1,36 +1,69 @@
 <script setup lang="ts">
-import { validationMiddlewares } from './account-validation'
+import { useDeviceMotion, useDeviceOrientation } from '@vueuse/core'
 
 const router = useRouter()
 
 const mentions = reactive<Array<{ err: boolean, msg: string }>>([])
-const account = ref('')
+const birth = reactive({
+  year: 5000,
+  month: 0,
+  day: 0,
+})
 
-watch(
-  () => account.value,
-  (value) => {
-    let errAmo = 0
-    mentions.length = 0;
+const motion = useDeviceMotion()
+const {
+  acceleration,
+  accelerationIncludingGravity,
+} = motion
 
-    [...validationMiddlewares].forEach((item) => {
-      if (errAmo >= 1)
-        return
+const {
+  isAbsolute,
+  alpha,
+  beta,
+  gamma,
+} = useDeviceOrientation()
 
-      const [err, msg] = item(value)
+watch(() => acceleration.value, (val) => {
+  console.log('acceleration xyz a-speed', val)
+})
 
-      if (!err)
-        errAmo += 1
+watch(() => accelerationIncludingGravity.value, (val) => {
+  console.log('acceleration gravity xyz a-speed', val)
+})
 
-      mentions.push({
-        err: !err,
-        msg,
+function getPermission() {
+  if (
+    typeof window.DeviceMotionEvent !== 'undefined'
+    && typeof window.DeviceMotionEvent.requestPermission === 'function'
+  ) {
+    window.DeviceMotionEvent.requestPermission()
+      .then((state) => {
+        if (state === 'granted') {
+          // 用户同意授权
+
+        }
+        else {
+          // 用户拒绝授权
+          alert('摇一摇需要授权设备运动权限,请重启应用后,再次进行授权!')
+        }
       })
-    })
+      .catch((err) => {
+        alert(`error: ${err}`)
+      })
+  }
+}
 
-    mentions.reverse()
-  },
-  { immediate: true },
-)
+/**
+ * 设计规则：
+ * 1. 输入身份证号
+ * 2. 输入出生年份 （必须匹配身份证号） 用0-100000滑块条
+ * 3. 陀螺仪来计算月份
+ * 4. 加速度来计算日期
+ */
+
+const birthText = computed(() => {
+  return `${birth.year - 5000}-${birth.month}-${birth.day}`
+})
 </script>
 
 <template>
@@ -45,11 +78,29 @@ watch(
     gap-4
   >
     <p text-1xl font-bold>
-      要登录，你需要输入你的账号...
+      输入你的生辰以继续
     </p>
-    <textarea v-model="account" text-1xl h-24 w-full flex-1 border-rounded />
-    <button w-full>
-      <span v-if="!mentions?.[0].err" @click="router.push('/birth')">登录</span>
+    <input
+      v-model="birth.year"
+      w-80
+      type="range"
+      min="0"
+      max="10000"
+      value="5000"
+      oninput="rangeValue.innerText = this.value"
+    >
+    <p op-75>
+      上抛手机输入日期！
+    </p>
+    {{ {
+      isAbsolute,
+      alpha,
+      beta,
+      gamma,
+    } }}
+    <p>你的生辰是：{{ birthText }}</p>
+    <button w-full @click="getPermission">
+      <span v-if="!mentions?.[0]?.err" @click="router.push('/birth')">登录</span>
       <span v-else op-50>无法完成登录</span>
     </button>
   </div>

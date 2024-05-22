@@ -332,14 +332,25 @@ validationMiddlewares.push(
 validationMiddlewares.push(
   (val: string) => {
     const res = [...val].filter(item => Number.isInteger(+item))
-    if (res.length === 0) { return [true, '数字必须按照递增序列排列'] }
+    if (res.length === 0) { return [true, '数字必须按照递减序列排列'] }
     else {
       const sorted = res.sort((a, b) => {
-        return a - b
+        return +b - +a
       })
       if (JSON.stringify(res) === JSON.stringify(sorted))
-        return [true, '数字必须按照递增序列排列']
-      else return [false, '数字必须按照递增序列排列']
+        return [true, '数字必须按照递减序列排列']
+      else return [false, '数字必须按照递减序列排列']
     }
+  },
+)
+
+// 每种特殊字符不能超过5个
+validationMiddlewares.push(
+  (val: string) => {
+    const recordMap: Record<string, number> = {};
+
+    [...val].forEach(item => recordMap[item] += (recordMap[item] || 0))
+
+    return [!!Object.values(recordMap).filter(item => item >= 5)?.length, '每种特殊字符不能超过5个']
   },
 )
