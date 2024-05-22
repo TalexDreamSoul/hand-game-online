@@ -2,7 +2,7 @@
 import { validationMiddlewares } from './account-validation'
 
 const mentions = reactive<Array<{ err: boolean, msg: string }>>([])
-const account = ref('李....................  李touch#A0c0E0.9.9.507')
+const account = ref('')
 
 watch(
   () => account.value,
