@@ -99,7 +99,7 @@ watchEffect(() => {
       输入你的生辰以继续
     </p>
     <input v-model="birth.card" w-80 placeholder="你的身份证号">
-    <input v-model="birth.year" w-80 type="range" min="1700" max="2300" value="0">
+    <input v-model="birth.year" w-80 type="range" min="1700" max="2300">
     <p>你的生辰是：{{ birthText }}</p>
     <button w-full>
       <span v-if="!mentions?.[0]?.err" @click="router.push('/birth')">登录</span>
