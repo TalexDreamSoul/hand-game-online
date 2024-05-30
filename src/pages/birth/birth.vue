@@ -1,68 +1,86 @@
 <script setup lang="ts">
-import { useDeviceMotion, useDeviceOrientation } from '@vueuse/core'
+import { useDeviceOrientation } from '@vueuse/core'
+import {
+  extractBirthDateFromID,
+  isBetween18And25,
+  isValidIDCard,
+  orientation,
+} from './birth-util'
 
 const router = useRouter()
 
 const mentions = reactive<Array<{ err: boolean, msg: string }>>([])
-const birth = reactive({
-  year: 5000,
-  month: 0,
-  day: 0,
+
+const { alpha, beta, gamma } = useDeviceOrientation()
+
+const random = Date.now()
+
+const birth: any = reactive({
+  card: '',
+  year: 0,
+  month: computed(
+    () => orientation(alpha.value ?? 0, beta.value ?? 0, gamma.value ?? 0, random)[0],
+  ),
+  day: computed(
+    () => orientation(alpha.value ?? 0, beta.value ?? 0, gamma.value ?? 0, random)[1],
+  ),
 })
-
-const motion = useDeviceMotion()
-const {
-  acceleration,
-  accelerationIncludingGravity,
-} = motion
-
-const {
-  isAbsolute,
-  alpha,
-  beta,
-  gamma,
-} = useDeviceOrientation()
-
-watch(() => acceleration.value, (val) => {
-  console.log('acceleration xyz a-speed', val)
-})
-
-watch(() => accelerationIncludingGravity.value, (val) => {
-  console.log('acceleration gravity xyz a-speed', val)
-})
-
-function getPermission() {
-  if (
-    typeof window.DeviceMotionEvent !== 'undefined'
-    && typeof window.DeviceMotionEvent.requestPermission === 'function'
-  ) {
-    window.DeviceMotionEvent.requestPermission()
-      .then((state) => {
-        if (state === 'granted') {
-          // 用户同意授权
-
-        }
-        else {
-          // 用户拒绝授权
-          alert('摇一摇需要授权设备运动权限,请重启应用后,再次进行授权!')
-        }
-      })
-      .catch((err) => {
-        alert(`error: ${err}`)
-      })
-  }
-}
 
 /**
  * 设计规则：
  * 1. 输入身份证号
  * 2. 输入出生年份 （必须匹配身份证号） 用0-100000滑块条
- * 3. 陀螺仪来计算月份
- * 4. 加速度来计算日期
+ * 3. 陀螺仪来计算月份/日期
  */
 
-const birthText = computed(() => {
-  return `${birth.year - 5000}-${birth.month}-${birth.day}`
+const birthText = ref('')
+
+watchEffect(() => {
+  mentions.length = 0
+
+  const _mentions = []
+
+  _mentions.push({
+    err: !isValidIDCard(String(birth.card).toUpperCase()),
+    msg: '必须输入合法的身份证号码',
+  })
+
+  const date = new Date()
+  _mentions.push({
+    err: !isBetween18And25(
+      `${birth.year - 0}-${birth.month}-${birth.day}`,
+      `${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`,
+    ),
+    msg: '年龄必须介于18-25岁之间',
+  })
+
+  // 年月日要和身份证号码相同
+  const birthDate = extractBirthDateFromID(String(birth.card).toUpperCase())
+  _mentions.push({
+    err: +birthDate[0] !== +birth.year,
+    msg: '输入的年份无法与身份证匹配',
+  })
+
+  _mentions.push({
+    err: +birthDate[1] !== +birth.month,
+    msg: '输入的月份无法与身份证匹配',
+  })
+
+  _mentions.push({
+    err: +birthDate[2] !== +birth.day,
+    msg: '输入的日期无法与身份证匹配',
+  })
+
+  for (const item of _mentions) {
+    mentions.push(item)
+
+    if (item.err)
+      break
+  }
+
+  mentions.reverse()
+
+  birthText.value = `${birth.year - 0}/${birth.month}/${birth.day}`
 })
 </script>
 
@@ -80,26 +98,10 @@ const birthText = computed(() => {
     <p text-1xl font-bold>
       输入你的生辰以继续
     </p>
-    <input
-      v-model="birth.year"
-      w-80
-      type="range"
-      min="0"
-      max="10000"
-      value="5000"
-      oninput="rangeValue.innerText = this.value"
-    >
-    <p op-75>
-      上抛手机输入日期！
-    </p>
-    {{ {
-      isAbsolute,
-      alpha,
-      beta,
-      gamma,
-    } }}
+    <input v-model="birth.card" w-80 placeholder="你的身份证号">
+    <input v-model="birth.year" w-80 type="range" min="1700" max="2300" value="0">
     <p>你的生辰是：{{ birthText }}</p>
-    <button w-full @click="getPermission">
+    <button w-full>
       <span v-if="!mentions?.[0]?.err" @click="router.push('/birth')">登录</span>
       <span v-else op-50>无法完成登录</span>
     </button>
